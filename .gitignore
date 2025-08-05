@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+.venv/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Data files
+data/
+*.csv
+*.tsv
+*.xls
+*.xlsx
+
+# Model files
+models/
+*.pkl
+*.joblib
+*.h5
+
+# Logs and debug files
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python egg info
+*.egg-info/
+*.egg
+
+# Environments and settings
+.env
+*.env
+*.ini
+
+# VS Code and other editor settings
+.vscode/
+.idea/
+*.swp
+
+# pip requirements freeze files
+pip-log.txt
