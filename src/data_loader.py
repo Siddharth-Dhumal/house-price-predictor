@@ -17,6 +17,6 @@ class DatasetLoader:
 			return None
 
 		except Exception as e:
-			print(f"[ERROR] An error has occured: {e}")
+			print(f"[ERROR] An error has occurred: {e}")
 
 			return None
