@@ -7,8 +7,6 @@ class DatasetLoader:
 	def load_data(self):
 		try:
 			data = pd.read_csv(self.file_path)
-			print("Data loaded successfully")
-
 			return data
 
 		except FileNotFoundError:
