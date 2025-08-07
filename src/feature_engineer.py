@@ -10,6 +10,7 @@ class FeatureEngineer:
 		clean_df = df.dropna()
 
 		X = clean_df.drop("median_house_value", axis = 1)
+		X = pd.get_dummies(X)
 
 		y = clean_df["median_house_value"]
 
