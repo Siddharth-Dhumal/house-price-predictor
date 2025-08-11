@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from src.config import load_config
 from src.data_loader import DatasetLoader
 from src.pipeline import build_preprocessor, build_model_pipeline
+from src.metrics import evaluate_holdout, baseline_metrics, evaluate_cv
 
 def parse_args():
 	parser = argparse.ArgumentParser()
@@ -30,7 +31,25 @@ def main():
 	pre = build_preprocessor(cfg.numerical, cfg.categorical)
 	pipe = build_model_pipeline(pre)
 
+	cv_stats = evaluate_cv(pipe, X_train, y_train, cv=5)
+	print("\nCV (5-fold) on TRAIN:")
+	print(f"  RMSE: {cv_stats['cv_rmse_mean']:.2f} ± {cv_stats['cv_rmse_std']:.2f}")
+	print(f"  MAE : {cv_stats['cv_mae_mean']:.2f} ± {cv_stats['cv_mae_std']:.2f}")
+	print(f"  R²  : {cv_stats['cv_r2_mean']:.3f} ± {cv_stats['cv_r2_std']:.3f}")
+
 	pipe.fit(X_train, y_train)
+
+	holdout = evaluate_holdout(pipe, X_test, y_test)
+	print("\nHoldout TEST:")
+	print(f"  RMSE: {holdout['test_rmse']:.2f}")
+	print(f"  MAE : {holdout['test_mae']:.2f}")
+	print(f"  R²  : {holdout['test_r2']:.3f}")
+
+	base = baseline_metrics(y_train, y_test)
+	print("\nBaseline (predict train mean) on TEST:")
+	print(f"  RMSE: {base['baseline_rmse']:.2f}")
+	print(f"  MAE : {base['baseline_mae']:.2f}")
+	print(f"  R²  : {base['baseline_r2']:.3f}")
 
 	os.makedirs(os.path.dirname(cfg.model_path), exist_ok=True)
 	joblib.dump(pipe, cfg.model_path)
