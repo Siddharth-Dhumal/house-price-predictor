@@ -11,10 +11,17 @@ def evaluate_holdout(pipe: Pipeline, X_test: pd.DataFrame, y_test: pd.Series) ->
 	mae = mean_absolute_error(y_test, y_pred)
 	r2 = r2_score(y_test, y_pred)
 
+	epsilon = 1e-8
+	y_true_arr = np.array(y_test)
+	y_pred_arr = np.array(y_pred)
+	denominator = np.where(y_true_arr == 0, epsilon, y_true_arr)
+	mape = np.mean(np.abs((y_true_arr - y_pred_arr) / denominator)) * 100
+
 	return {
 		"test_rmse": float(rmse),
 		"test_mae": float(mae),
 		"test_r2": float(r2),
+		"test_mape": float(mape),
 	}
 
 def baseline_metrics(y_train: pd.Series, y_test: pd.Series) -> Dict[str, float]:
@@ -25,10 +32,17 @@ def baseline_metrics(y_train: pd.Series, y_test: pd.Series) -> Dict[str, float]:
 	mae = mean_absolute_error(y_test, y_hat)
 	r2 = r2_score(y_test, y_hat)
 
+	epsilon = 1e-8
+	y_true_arr = np.array(y_test)
+	y_pred_arr = np.array(y_hat)
+	denominator = np.where(y_true_arr == 0, epsilon, y_true_arr)
+	mape = np.mean(np.abs((y_true_arr - y_pred_arr) / denominator)) * 100
+
 	return {
 		"baseline_rmse": float(rmse),
 		"baseline_mae": float(mae),
 		"baseline_r2": float(r2),
+		"baseline_mape": float(mape),
 	}
 
 def evaluate_cv(pipe: Pipeline, X: pd.DataFrame, y: pd.Series, cv: int = 5) -> Dict[str, float]:
@@ -36,6 +50,7 @@ def evaluate_cv(pipe: Pipeline, X: pd.DataFrame, y: pd.Series, cv: int = 5) -> D
 		"rmse": "neg_root_mean_squared_error",
 		"mae":  "neg_mean_absolute_error",
 		"r2": "r2",
+		"mape": "neg_mean_absolute_percentage_error",
 	}
 
 	cv_res = cross_validate(
@@ -51,6 +66,7 @@ def evaluate_cv(pipe: Pipeline, X: pd.DataFrame, y: pd.Series, cv: int = 5) -> D
 	rmse = -cv_res["test_rmse"]
 	mae = -cv_res["test_mae"]
 	r2 = cv_res["test_r2"]
+	mape = -cv_res["test_mape"] * 100
 
 	return {
 		"cv_rmse_mean": float(np.mean(rmse)),
@@ -59,4 +75,6 @@ def evaluate_cv(pipe: Pipeline, X: pd.DataFrame, y: pd.Series, cv: int = 5) -> D
         "cv_mae_std":   float(np.std(mae)),
         "cv_r2_mean":   float(np.mean(r2)),
         "cv_r2_std":    float(np.std(r2)),
+        "cv_mape_mean": float(np.mean(mape)),
+        "cv_mape_std":  float(np.std(mape)),
     }

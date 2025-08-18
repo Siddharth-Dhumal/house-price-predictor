@@ -36,6 +36,7 @@ def main():
 	print(f"  RMSE: {cv_stats['cv_rmse_mean']:.2f} ± {cv_stats['cv_rmse_std']:.2f}")
 	print(f"  MAE : {cv_stats['cv_mae_mean']:.2f} ± {cv_stats['cv_mae_std']:.2f}")
 	print(f"  R²  : {cv_stats['cv_r2_mean']:.3f} ± {cv_stats['cv_r2_std']:.3f}")
+	print(f"  MAPE: {cv_stats['cv_mape_mean']:.2f}% ± {cv_stats['cv_mape_std']:.2f}%")
 
 	pipe.fit(X_train, y_train)
 
@@ -44,12 +45,14 @@ def main():
 	print(f"  RMSE: {holdout['test_rmse']:.2f}")
 	print(f"  MAE : {holdout['test_mae']:.2f}")
 	print(f"  R²  : {holdout['test_r2']:.3f}")
+	print(f"  MAPE: {holdout['test_mape']:.2f}%")
 
 	base = baseline_metrics(y_train, y_test)
 	print("\nBaseline (predict train mean) on TEST:")
 	print(f"  RMSE: {base['baseline_rmse']:.2f}")
 	print(f"  MAE : {base['baseline_mae']:.2f}")
 	print(f"  R²  : {base['baseline_r2']:.3f}")
+	print(f"  MAPE: {base['baseline_mape']:.2f}%")
 
 	os.makedirs(os.path.dirname(cfg.model_path), exist_ok=True)
 	joblib.dump(pipe, cfg.model_path)
