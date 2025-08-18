@@ -21,3 +21,25 @@ numerical:
 
 categorical:
   - ocean_proximity
+
+models:
+  default: linear_small
+  presets:
+    linear_small:
+      type: LinearRegression
+      params: {}
+
+    rf_fast:
+      type: RandomForestRegressor
+      params:
+        n_estimators: 200
+        max_depth: 20
+        random_state: 42
+
+    gbm_balanced:
+      type: GradientBoostingRegressor
+      params:
+        n_estimators: 300
+        learning_rate: 0.05
+        max_depth: 3
+        random_state: 42

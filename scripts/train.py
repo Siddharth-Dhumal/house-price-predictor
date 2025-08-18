@@ -11,6 +11,7 @@ from src.metrics import evaluate_holdout, baseline_metrics, evaluate_cv
 def parse_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument("--config", required=True, help="Path to YAML config")
+	parser.add_argument("--model-preset", default=None, help="Name of model preset from YAML (models.presets.*)")
 	return parser.parse_args()
 
 def main():
@@ -28,8 +29,20 @@ def main():
 		X, y, test_size=cfg.test_size, random_state=cfg.random_state, shuffle=True
 	)
 
+	selected = args.model_preset or cfg.models_default
+	presets = cfg.models_presets
+
+	print("Selected preset:", selected)
+	print("Available presets:", list(presets.keys()))
+
+	if selected not in presets:
+		raise KeyError(f"Unknown model preset '{selected}'. Available: {sorted(presets.keys())}")
+
+	preset = presets[selected]
+	print("Using model preset:", selected, "->", preset["type"])
+
 	pre = build_preprocessor(cfg.numerical, cfg.categorical)
-	pipe = build_model_pipeline(pre)
+	pipe = build_model_pipeline(pre, cfg_model=preset)
 
 	cv_stats = evaluate_cv(pipe, X_train, y_train, cv=5)
 	print("\nCV (5-fold) on TRAIN:")
