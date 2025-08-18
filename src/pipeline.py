@@ -4,6 +4,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 
 def build_preprocessor(numerical: List[str], categorical: List[str]) -> ColumnTransformer:
 
@@ -30,11 +31,23 @@ def build_preprocessor(numerical: List[str], categorical: List[str]) -> ColumnTr
 
 	return preprocessor
 	
+def make_model(name: str, params: dict):
+	name = (name or "LinearRegression").lower()
+	if name == "linearregression":
+		return LinearRegression(**params)
+	if name == "randomforestregressor":
+		return RandomForestRegressor(**params)
+	if name == "gradientboostingregressor":
+		return GradientBoostingRegressor(**params)
+	raise ValueError(f"Unknown model type: {name}")
 
-def build_model_pipeline(preprocessor: ColumnTransformer, model=None) -> Pipeline:
+def build_model_pipeline(preprocessor: ColumnTransformer, model=None, cfg_model: dict | None = None) -> Pipeline:
 
 	if model is None:
-		model = LinearRegression()
+		if not cfg_model:
+			model = LinearRegression()
+		else:
+			model = make_model(cfg_model.get("type"), cfg_model.get("params", {}))
 
 	pipe = Pipeline(
 		steps=[
